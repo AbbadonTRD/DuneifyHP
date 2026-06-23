@@ -930,10 +930,11 @@
     box-shadow 180ms ease;
 }
 
-.lab-app-logo svg {
+.lab-app-logo svg,
+.lab-app-logo svg path {
   width: 1.15rem;
   height: 1.15rem;
-  fill: #0c0c0d;
+  fill: #0a0a0a !important;
 }
 
 .lab-card:hover .lab-app-logo,

@@ -13,9 +13,11 @@ export function EnterScreen({ onEnter }: EnterScreenProps) {
   const [startVisible, setStartVisible] = useState(false);
   const [exiting, setExiting] = useState(false);
 
-  // Let the gate breathe in while the spiral is still forming.
+  // Hold the prompt + enter button back until the spiral has finished
+  // expanding (~6.5s), so the text resolves with the particles instead of
+  // popping in over a still-forming background.
   useEffect(() => {
-    const timer = setTimeout(() => setStartVisible(true), 2000);
+    const timer = setTimeout(() => setStartVisible(true), 6500);
     return () => clearTimeout(timer);
   }, []);
 

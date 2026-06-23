@@ -14,7 +14,6 @@ import sharkImage from "@/assets/images/shark-duneify.png";
 const services: BentoItem[] = [
   {
     title: "Media Vault",
-    meta: "1,284 files",
     description:
       "Movies, shows and music served from your own stack, ready for every screen.",
     brand: "Jellyfin",
@@ -26,7 +25,6 @@ const services: BentoItem[] = [
   },
   {
     title: "Photo Vault",
-    meta: "2.1 TB used",
     description:
       "Immich keeps the camera roll local, indexed and ready without renting access back.",
     brand: "Immich",
@@ -36,7 +34,6 @@ const services: BentoItem[] = [
   },
   {
     title: "Network Filter",
-    meta: "38% blocked",
     description:
       "Local DNS, tracker blocking and quiet routing before traffic leaves the house.",
     brand: "Pi-hole",
@@ -46,7 +43,6 @@ const services: BentoItem[] = [
   },
   {
     title: "Container Deck",
-    meta: "24 running",
     description:
       "The apps stay boxed, supervised and restartable without drama.",
     brand: "Docker",
@@ -57,7 +53,6 @@ const services: BentoItem[] = [
   },
   {
     title: "System Health",
-    meta: "Up 42 days",
     description:
       "CPU, memory and thermals from the rack, visible before anything gets loud.",
     brand: "Proxmox",
@@ -68,7 +63,6 @@ const services: BentoItem[] = [
   },
   {
     title: "Cold Backups",
-    meta: "Last 02:00",
     description:
       "Nightly snapshots to local disks and a cold copy for when luck runs out.",
     brand: "Restic",
@@ -78,7 +72,6 @@ const services: BentoItem[] = [
   },
   {
     title: "Remote Tunnel",
-    meta: "3 peers",
     description:
       "Encrypted access back home without exposing the whole rack to the open web.",
     brand: "Tailscale",
@@ -88,7 +81,6 @@ const services: BentoItem[] = [
   },
   {
     title: "Ingest Queue",
-    meta: "5 active",
     description:
       "Fetch, rename and file the incoming cargo before it hits the library.",
     brand: "Sonarr",
