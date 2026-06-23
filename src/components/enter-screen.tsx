@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { SpiralAnimation } from "@/components/ui/spiral-animation";
 import { cn } from "@/lib/utils";
 
+const INTRO_REVEAL_DELAY_MS = 6500;
+
 interface EnterScreenProps {
   /** Called once the exit transition has finished and the site should be revealed. */
   onEnter: () => void;
@@ -11,15 +13,35 @@ interface EnterScreenProps {
 
 export function EnterScreen({ onEnter }: EnterScreenProps) {
   const [startVisible, setStartVisible] = useState(false);
+  const [revealQueued, setRevealQueued] = useState(false);
   const [exiting, setExiting] = useState(false);
 
   // Hold the prompt + enter button back until the spiral has finished
   // expanding (~6.5s), so the text resolves with the particles instead of
   // popping in over a still-forming background.
   useEffect(() => {
-    const timer = setTimeout(() => setStartVisible(true), 6500);
+    const timer = window.setTimeout(
+      () => setRevealQueued(true),
+      INTRO_REVEAL_DELAY_MS,
+    );
     return () => clearTimeout(timer);
   }, []);
+
+  // Wait two frames before switching the visible class so the browser has a
+  // clean, painted opacity: 0 state to animate while the spiral keeps moving.
+  useEffect(() => {
+    if (!revealQueued) return;
+
+    let secondFrame = 0;
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => setStartVisible(true));
+    });
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+    };
+  }, [revealQueued]);
 
   const handleEnter = () => {
     if (exiting) return;

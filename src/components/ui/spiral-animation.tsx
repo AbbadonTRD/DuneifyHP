@@ -38,7 +38,8 @@ class AnimationController {
     private timeline: gsap.core.Timeline
     private time = 0
     private ctx: CanvasRenderingContext2D
-    private size: number
+    private width: number
+    private height: number
     private stars: Star[] = []
 
     // 常量
@@ -47,12 +48,19 @@ class AnimationController {
     private readonly cameraTravelDistance = 3400
     private readonly startDotYOffset = 28
     private readonly viewZoom = 100
-    private readonly numberOfStars = 5000
+    private readonly numberOfStars: number
     private readonly trailLength = 80
 
-    constructor(_canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, _dpr: number, size: number) {
+    constructor(
+        ctx: CanvasRenderingContext2D,
+        width: number,
+        height: number,
+        numberOfStars: number,
+    ) {
         this.ctx = ctx
-        this.size = size
+        this.width = width
+        this.height = height
+        this.numberOfStars = numberOfStars
         this.timeline = gsap.timeline({ repeat: -1 })
 
         // 初始化 (setupRandomGenerator seeds + creates the stars once)
@@ -198,10 +206,10 @@ class AnimationController {
         if (!ctx) return
 
         ctx.fillStyle = 'black'
-        ctx.fillRect(0, 0, this.size, this.size)
+        ctx.fillRect(0, 0, this.width, this.height)
 
         ctx.save()
-        ctx.translate(this.size / 2, this.size / 2)
+        ctx.translate(this.width / 2, this.height / 2)
 
         // 计算时间参数
         const t1 = this.constrain(this.map(this.time, 0, this.changeEventTime + 0.25, 0, 1), 0, 1)
@@ -426,26 +434,34 @@ export function SpiralAnimation() {
         if (!canvas) return
         if (dimensions.width === 0 || dimensions.height === 0) return
 
-        const ctx = canvas.getContext('2d')
+        // Keep completed frames in sync with compositing. The low-latency
+        // mode can occasionally present a partially rendered particle frame.
+        const ctx = canvas.getContext('2d', { alpha: false })
         if (!ctx) return
 
         // 处理DPR以解决模糊问题
-        const dpr = window.devicePixelRatio || 1
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
         // 使用全屏尺寸
-        const size = Math.max(dimensions.width, dimensions.height)
+        const particleCount = Math.min(
+            1600,
+            Math.max(700, Math.round((dimensions.width * dimensions.height) / 1300)),
+        )
 
-        canvas.width = size * dpr
-        canvas.height = size * dpr
+        canvas.width = Math.round(dimensions.width * dpr)
+        canvas.height = Math.round(dimensions.height * dpr)
 
         // 设置CSS尺寸
-        canvas.style.width = `${dimensions.width}px`
-        canvas.style.height = `${dimensions.height}px`
 
         // 缩放上下文以适应DPR
-        ctx.scale(dpr, dpr)
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
         // 创建动画控制器
-        animationRef.current = new AnimationController(canvas, ctx, dpr, size)
+        animationRef.current = new AnimationController(
+            ctx,
+            dimensions.width,
+            dimensions.height,
+            particleCount,
+        )
 
         return () => {
             // 清理动画
