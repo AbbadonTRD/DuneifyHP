@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { motion, type Variants } from "framer-motion";
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { cn } from "@/lib/utils";
 
 export interface BentoItem {
@@ -108,22 +109,12 @@ function BentoGrid({ items = itemsSample }: BentoGridProps) {
                 >
                     <div className="lab-card-content flex h-full flex-col justify-between gap-4">
                         <div className="flex items-center justify-between gap-3">
-                            {(item.brand || item.icon) && (
-                                <div
-                                    className={cn(
-                                        "lab-app-slot",
-                                        item.brand && "lab-app-slot--brand"
-                                    )}
-                                    aria-label={item.brand}
-                                >
-                                    {item.brand ? (
-                                        <span className="lab-app-mark">
-                                            {item.brand}
-                                        </span>
-                                    ) : (
-                                        item.icon
-                                    )}
-                                </div>
+                            {item.brand ? (
+                                <BrandLogo brand={item.brand} />
+                            ) : item.icon ? (
+                                <div className="lab-app-slot">{item.icon}</div>
+                            ) : (
+                                <span aria-hidden="true" />
                             )}
                             <span className="lab-status">{item.status || "Active"}</span>
                         </div>
