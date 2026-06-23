@@ -189,6 +189,15 @@ export default function HeroAsciiOne({
             <span>V1.0.0</span>
           </div>
 
+          <a
+            href="https://www.linkedin.com/in/tiago-cevallos-de-carvalho-13783a271/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ascii-credit inline-flex items-center gap-1 underline decoration-dotted underline-offset-2 transition-opacity hover:opacity-70"
+          >
+            Built with <span className="ascii-credit-heart">♥</span> by Tiago
+          </a>
+
           <div className="flex items-center gap-2 lg:gap-4">
             <span className="hidden lg:inline">INDEXING</span>
             <div className="ascii-pulse" aria-hidden="true">

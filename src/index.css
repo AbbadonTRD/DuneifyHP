@@ -3367,6 +3367,19 @@
   white-space: nowrap;
 }
 
+.ascii-credit {
+  color: oklch(0.9 0.08 82 / 0.78);
+  letter-spacing: 0.02em;
+}
+
+.ascii-credit:hover {
+  color: var(--amber-bright);
+}
+
+.ascii-credit-heart {
+  color: oklch(0.7 0.18 25);
+}
+
 .ascii-footer [aria-hidden='true'] span {
   width: 0.22rem;
   background: oklch(0.82 0.16 75 / 0.32);
