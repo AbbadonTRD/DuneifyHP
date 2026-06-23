@@ -148,11 +148,15 @@
   gap: clamp(0.7rem, 1.4vw, 1.05rem);
   opacity: 0;
   transform: translateY(-0.6rem);
+  transition:
+    opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1100ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 
 .enter-screen__prompt--visible {
-  animation: enter-reveal 1100ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .enter-screen__trace {
@@ -288,11 +292,15 @@
   min-width: 9rem;
   opacity: 0;
   transform: translate(-50%, calc(-50% + 0.6rem)) scale(0.97);
+  transition:
+    opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1) 220ms,
+    transform 1100ms cubic-bezier(0.16, 1, 0.3, 1) 220ms;
   will-change: opacity, transform;
 }
 
 .enter-screen__center-action--visible {
-  animation: enter-center-reveal 1100ms cubic-bezier(0.16, 1, 0.3, 1) 220ms both;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .enter-screen__enter-text {
@@ -384,28 +392,6 @@
   outline-offset: 0.35rem;
 }
 
-@keyframes enter-reveal {
-  from {
-    opacity: 0;
-    transform: translateY(-0.6rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes enter-center-reveal {
-  from {
-    opacity: 0;
-    transform: translate(-50%, calc(-50% + 0.6rem)) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
 @media (max-width: 760px) {
   .enter-screen__veil {
     background:
@@ -471,27 +457,21 @@
 
 @media (prefers-reduced-motion: reduce) {
   .enter-screen,
-  .enter-screen__prompt,
-  .enter-screen__center-action,
   .enter-screen__enter-text,
   .enter-screen__enter-text::before,
   .enter-screen__enter-text::after {
     transition: none;
   }
 
-  .enter-screen__prompt--visible,
-  .enter-screen__center-action--visible {
-    animation: none;
-    opacity: 1;
-    filter: none;
-  }
-
-  .enter-screen__prompt--visible {
+  /* Keep a gentle opacity fade (motion-free), but no positional movement. */
+  .enter-screen__prompt {
     transform: translateY(0);
+    transition: opacity 600ms ease;
   }
 
-  .enter-screen__center-action--visible {
+  .enter-screen__center-action {
     transform: translate(-50%, -50%) scale(1);
+    transition: opacity 600ms ease;
   }
 }
 
