@@ -47,8 +47,8 @@ export function BrandLogo({ brand, className }: BrandLogoProps) {
       aria-label={icon.title}
       title={icon.title}
     >
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#0a0a0a">
-        <path d={icon.path} fill="#0a0a0a" />
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="#ffffff">
+        <path d={icon.path} fill="#ffffff" />
       </svg>
     </span>
   );
