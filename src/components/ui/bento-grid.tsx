@@ -61,11 +61,6 @@ const itemsSample: BentoItem[] = [
 ];
 
 function BentoGrid({ items = itemsSample }: BentoGridProps) {
-    const normalizedItems = items.map((item) => ({
-        ...item,
-        cta: item.cta?.includes(">") ? item.cta : "Open >",
-    }));
-
     // Stagger the cards in as the grid scrolls into view.
     const container: Variants = {
         hidden: {},
@@ -92,7 +87,7 @@ function BentoGrid({ items = itemsSample }: BentoGridProps) {
             whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
         >
-            {normalizedItems.map((item, index) => {
+            {items.map((item, index) => {
                 return (
                 <motion.div
                     key={index}
@@ -116,33 +111,24 @@ function BentoGrid({ items = itemsSample }: BentoGridProps) {
                             ) : (
                                 <span aria-hidden="true" />
                             )}
-                            <span className="lab-status">{item.status || "Active"}</span>
+                            {item.brand && (
+                                <span className="lab-card-brand">{item.brand}</span>
+                            )}
                         </div>
 
                         <div className="space-y-2">
                             <h3 className="lab-card-title">
                                 <span>{item.title}</span>
-                                {item.meta && (
-                                    <span className="lab-card-meta">{item.meta}</span>
-                                )}
                             </h3>
                             <p className="lab-card-copy">{item.description}</p>
                         </div>
 
-                        <div className="flex items-end justify-between gap-3">
-                            <div className="flex flex-wrap items-center gap-2">
-                                {item.tags?.map((tag, i) => (
-                                    <span
-                                        key={i}
-                                        className="lab-tag"
-                                    >
-                                        #{tag}
-                                    </span>
-                                ))}
-                            </div>
-                            <span className="lab-card-cta">
-                                {item.cta || "Explore →"}
-                            </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                            {item.tags?.map((tag, i) => (
+                                <span key={i} className="lab-tag">
+                                    {tag}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </motion.div>

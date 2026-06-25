@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { EnterScreen } from "@/components/enter-screen";
+import { AsciiMarquee } from "@/components/ui/ascii-marquee";
 import { BentoGrid, type BentoItem } from "@/components/ui/bento-grid";
+import { CostWallet } from "@/components/ui/cost-wallet";
 import { CpuArchitecture } from "@/components/ui/cpu-architecture";
 import HeroAscii from "@/components/ui/hero-ascii";
 import HeroAsciiOne from "@/components/ui/hero-ascii-one";
 import { OceanWaves } from "@/components/ui/ocean-waves";
 import { ParticleTextEffect } from "@/components/ui/particle-text-effect";
-import { RackTerminal } from "@/components/ui/rack-terminal";
+import { RecommendationsTV } from "@/components/ui/recommendations-tv";
 import { WavePath } from "@/components/ui/wave-path";
 import sharkImage from "@/assets/images/shark-duneify.png";
 
@@ -93,7 +95,23 @@ const services: BentoItem[] = [
 
 function App() {
   const reduce = useReducedMotion();
-  const [entered, setEntered] = useState(false);
+  // `?nointro` skips the spiral gate — handy for sharing a deep link or
+  // previewing the dashboard directly.
+  const [entered, setEntered] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).has("nointro"),
+  );
+
+  // Once inside, honor a #section deep link (the SPA mounts after the browser's
+  // own initial anchor scroll, so do it ourselves).
+  useEffect(() => {
+    if (!entered) return;
+    const id = window.location.hash.slice(1);
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView();
+  }, [entered]);
 
   // Lock scrolling behind the enter-gate so the spiral stays the whole view
   // until the visitor chooses to come in.
@@ -124,7 +142,10 @@ function App() {
         <ParticleTextEffect />
       </section>
 
-      <section className="lab-section dark relative min-h-screen w-full overflow-hidden">
+      <section
+        id="homelab"
+        className="lab-section dark relative min-h-screen w-full overflow-hidden"
+      >
         <div className="lab-backdrop" aria-hidden="true" />
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
@@ -144,14 +165,6 @@ function App() {
                 transcoding, backups and the queue feeding the archive.
               </p>
             </div>
-
-            <div className="lab-status-pill inline-flex items-center gap-2 self-start px-3.5 py-1.5 text-xs font-medium">
-              <span className="relative flex h-2 w-2" aria-hidden="true">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-              </span>
-              All systems nominal
-            </div>
           </motion.header>
 
           <motion.div
@@ -165,7 +178,8 @@ function App() {
               <div className="quicksync-bento-copy">
                 <div className="quicksync-app-mark mb-5">Intel Quick Sync</div>
                 <h3 className="quicksync-bento-title">
-                  Bad device? no problem.
+                  <span className="block">Bad Device?</span>
+                  <span className="block">No Problem.</span>
                 </h3>
                 <p className="quicksync-bento-text">
                   Centralized Intel Quick Sync handles the heavy lift whenever a
@@ -176,9 +190,9 @@ function App() {
                   className="quicksync-bento-tags"
                   aria-label="Quick Sync capabilities"
                 >
-                  <span className="lab-tag">#Intel Quick Sync</span>
-                  <span className="lab-tag">#Hardware transcode</span>
-                  <span className="lab-tag">#Multi-device</span>
+                  <span className="lab-tag">Intel Quick Sync</span>
+                  <span className="lab-tag">Hardware transcode</span>
+                  <span className="lab-tag">Multi-device</span>
                 </div>
               </div>
 
@@ -189,6 +203,34 @@ function App() {
           </motion.div>
 
           <BentoGrid items={services} />
+        </div>
+      </section>
+
+      <AsciiMarquee />
+
+      <section
+        id="recommendations"
+        className="recs-section dark relative w-full overflow-hidden"
+      >
+        <div className="lab-backdrop" aria-hidden="true" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
+          <motion.header
+            initial={{ opacity: 0, y: reduce ? 0 : 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="recs-header mb-8 sm:mb-12"
+          >
+            <p className="recs-eyebrow">FIELD NOTES</p>
+            <h2 className="lab-heading text-3xl font-semibold sm:text-4xl lg:text-5xl">
+              What I'd actually install
+            </h2>
+            <p className="lab-copy mt-3 max-w-lg text-sm leading-relaxed sm:text-base">
+              Pick your screen. The set I reach for first on each platform,
+              tuned for a self-hosted Jellyfin stack rather than a storefront.
+            </p>
+          </motion.header>
 
           <motion.div
             initial={{ opacity: 0, y: reduce ? 0 : 24, filter: "blur(6px)" }}
@@ -196,10 +238,57 @@ function App() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <RackTerminal />
+            <RecommendationsTV />
           </motion.div>
         </div>
       </section>
+
+      <section
+        id="zero"
+        className="zero-section dark relative w-full overflow-hidden"
+      >
+        <div className="lab-backdrop" aria-hidden="true" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
+          <div className="zero-grid">
+            <motion.div
+              initial={{ opacity: 0, y: reduce ? 0 : 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <p className="recs-eyebrow">THE MATH</p>
+              <h2 className="lab-heading text-3xl font-semibold sm:text-4xl lg:text-5xl">
+                Zero subscriptions.
+                <span className="block">Total freedom.</span>
+              </h2>
+              <p className="lab-copy mt-3 max-w-lg text-sm leading-relaxed sm:text-base">
+                No Netflix. No Prime. No Hulu, Disney+, OneDrive or Miro renting
+                you access to your own life. One box at home does the job — and
+                the monthly bill rounds to nothing.
+              </p>
+              <ul className="zero-list">
+                <li>Netflix, Prime, Disney+, Hulu — replaced by Jellyfin</li>
+                <li>Spotify, Apple Music — replaced by Navidrome</li>
+                <li>OneDrive, iCloud, Google Photos — replaced by Immich</li>
+                <li>Miro, Notion lock-in — your stack, your rules</li>
+              </ul>
+            </motion.div>
+
+            <motion.div
+              className="zero-wallet-mount"
+              initial={{ opacity: 0, y: reduce ? 0 : 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <CostWallet />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <AsciiMarquee text="█▓▒░ DUNEIFY ░▒▓█ ·· STREAM IT / SYNC IT / TRANSCODE IT / OWN IT ·· ▓▒░ HOME LAB ░▒▓ ·· 01001111 01010111 01001110 ·· OWNED.STACK ··" />
 
       <section className="seas-section dark relative min-h-[82vh] w-full overflow-hidden">
         <div className="lab-backdrop" aria-hidden="true" />

@@ -12,8 +12,9 @@
   --background: oklch(0 0 0);
 }
 
+/* Body / default: JetBrains Mono. Display headers: Bitcount Grid Double. */
 * {
-  font-family: 'SD Dystopian', 'Share Tech Mono', 'Courier New', monospace;
+  font-family: var(--font-main);
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -24,7 +25,35 @@
   --border: oklch(0.27 0 0);
   --primary: oklch(0.82 0.16 75);
   --radius: 0.625rem;
-  --font-main: 'SD Dystopian', 'Share Tech Mono', 'Courier New', monospace;
+  --font-main: 'JetBrains Mono', 'Share Tech Mono', ui-monospace, 'Courier New',
+    monospace;
+  --font-display: 'Bitcount Grid Double', 'JetBrains Mono', ui-monospace,
+    monospace;
+}
+
+/* Headers only get the Bitcount display face. Everything else stays mono. */
+h1,
+h2,
+h3,
+.ascii-brand,
+.ascii-hero-title,
+.lab-heading,
+.seas-title,
+.quicksync-bento-title,
+.enter-screen__title,
+.recs-tv-display-name,
+.recs-tv-brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: 'wght' 600;
+}
+
+/* The global `*` font rule lands on child <span>s directly, so spans inside a
+   display heading (e.g. "HOME LAB", "No Problem.") fall back to the body font.
+   Re-assert the display face on them. */
+.ascii-hero-title span,
+.quicksync-bento-title span {
+  font-family: var(--font-display);
 }
 
 @theme inline {
@@ -479,6 +508,8 @@
 .quicksync-section,
 .quicksync-original-section,
 .lab-section,
+.recs-section,
+.zero-section,
 .seas-section,
 .ascii-hero {
   position: relative;
@@ -770,7 +801,7 @@
 }
 
 .lab-heading {
-  font-family: var(--font-main);
+  font-family: var(--font-display);
   line-height: 1.05;
   letter-spacing: 0;
   color: var(--amber-bright);
@@ -971,6 +1002,14 @@
   font-size: 0.72rem;
   line-height: 1.1;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lab-card-brand {
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: oklch(0.82 0.12 78 / 0.6);
   white-space: nowrap;
 }
 
@@ -1988,6 +2027,180 @@
   display: grid;
 }
 
+/* ───────────────── Recommendations TV (reuses the CRT shell) ───────────── */
+
+.recs-eyebrow {
+  margin: 0 0 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: oklch(0.82 0.16 75 / 0.85);
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.recs-eyebrow::before {
+  content: '';
+  width: 1.6rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.recs-tv {
+  margin-top: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+.recs-tv-main {
+  display: grid;
+  grid-template-columns: minmax(10.5rem, 0.62fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: clamp(0.8rem, 2.2vw, 1.5rem);
+}
+
+.recs-tv-list {
+  justify-content: flex-start;
+  padding: clamp(0.7rem, 1.6vw, 1rem);
+}
+
+.recs-tv-list .rack-terminal-side-row {
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.recs-tv-list .rack-terminal-side-row small {
+  font-size: clamp(0.58rem, 0.9vw, 0.68rem);
+}
+
+.recs-tv-display {
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: clamp(1rem, 2.6vw, 1.7rem);
+  text-align: left;
+}
+
+.recs-tv-display-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.recs-tv-display-name {
+  margin: 0;
+  color: var(--amber-bright);
+  font-size: clamp(1.8rem, 4.4vw, 3.2rem);
+  line-height: 1.04;
+  letter-spacing: 0.005em;
+  text-shadow: 0 0 14px oklch(0.82 0.16 75 / 0.34);
+}
+
+.recs-tv-display-desc {
+  margin: 0;
+  max-width: 44ch;
+  color: oklch(0.9 0.04 82 / 0.88);
+  font-size: clamp(0.82rem, 1.15vw, 1rem);
+  line-height: 1.52;
+  text-wrap: pretty;
+}
+
+.recs-tv .rack-terminal-tape {
+  margin-top: 0.4rem;
+  width: 100%;
+  max-width: none;
+}
+
+@media (max-width: 720px) {
+  .recs-tv-screen {
+    height: auto;
+    min-height: 27rem;
+  }
+
+  .recs-tv-main {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .recs-tv-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .recs-tv-list .rack-terminal-side-row {
+    width: auto;
+    flex: 1 1 7rem;
+  }
+
+  .recs-tv-display-name {
+    font-size: clamp(1.6rem, 8vw, 2.4rem);
+  }
+}
+
+/* ───────────────── ASCII ticker divider ──────────────────────────────── */
+
+.ascii-marquee {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border-block: 1px solid oklch(0.82 0.16 75 / 0.18);
+  background:
+    linear-gradient(180deg, oklch(0.82 0.16 75 / 0.05), transparent),
+    oklch(0.045 0.007 52 / 0.4);
+  color: oklch(0.86 0.09 80 / 0.6);
+  font-family: var(--font-main);
+  font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+  letter-spacing: 0.12em;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 7%,
+    black 93%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 7%,
+    black 93%,
+    transparent
+  );
+}
+
+.ascii-marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  padding-block: 0.5rem;
+  animation: ascii-marquee-scroll 34s linear infinite;
+}
+
+.ascii-marquee-track span {
+  flex: 0 0 auto;
+}
+
+@keyframes ascii-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The ticker is a slow, non-flashing horizontal drift — the gentle kind
+     reduce-motion still allows (same call the ocean waves make), so keep it
+     moving rather than freezing the carousel. Just take it slower. */
+  .ascii-marquee-track {
+    animation-duration: 60s;
+  }
+}
+
 @keyframes rack-terminal-field {
   from {
     background-position: 0 0;
@@ -2692,11 +2905,11 @@
 
 .quicksync-bento-title {
   margin: 0;
-  max-width: 12ch;
-  font-family: var(--font-main);
-  font-size: clamp(2.6rem, 6vw, 5.8rem);
-  font-weight: 700;
-  line-height: 0.96;
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3.6vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.04;
   letter-spacing: 0;
   color: var(--amber-bright);
   text-shadow:
@@ -2794,31 +3007,9 @@
   );
 }
 
-.seas-current::before,
-.seas-current::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  width: min(72rem, 92vw);
-  height: 1px;
-  transform: translateX(-50%);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    oklch(0.82 0.16 75 / 0.24),
-    transparent
-  );
-  filter: drop-shadow(0 0 12px oklch(0.82 0.16 75 / 0.2));
-}
-
-.seas-current::before {
-  top: 22%;
-}
-
-.seas-current::after {
-  bottom: 18%;
-  opacity: 0.65;
-}
+/* (Removed the two horizontal scan-lines that crossed the composition under
+   the shark — they read as stray/random. The ocean dot-wave carries the
+   section on its own.) */
 
 /* Ambient ocean: a field of amber dots whose surface is a travelling wave
    moving left -> right. Drawn on a canvas (OceanWaves) so the same dot
@@ -2844,9 +3035,9 @@
 .seas-shark {
   position: relative;
   z-index: 1;
-  width: min(100%, 46rem);
+  width: min(100%, 44rem);
   max-width: none;
-  justify-self: end;
+  justify-self: center;
   transform: rotate(-2deg);
   opacity: 0.62;
   filter:
@@ -2997,11 +3188,36 @@
 }
 
 .ascii-unicorn-wrap,
-.ascii-stars-bg {
+.ascii-stars-bg,
+.ascii-field {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
+}
+
+.ascii-field {
+  mask-image: radial-gradient(
+    ellipse 86% 78% at 50% 44%,
+    black 0%,
+    black 52%,
+    transparent 88%
+  );
+}
+
+.ascii-hero--home .ascii-field {
+  mask-image: radial-gradient(
+    ellipse 76% 80% at 64% 46%,
+    black 0%,
+    black 54%,
+    transparent 90%
+  );
+}
+
+.ascii-field-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .ascii-unicorn-wrap--archive {
@@ -3175,7 +3391,7 @@
 }
 
 .ascii-brand {
-  font-family: var(--font-main);
+  font-family: var(--font-display);
   font-size: clamp(1.15rem, 2vw, 1.55rem);
   font-weight: 700;
   line-height: 1;
@@ -3283,7 +3499,7 @@
 
 .ascii-hero-title {
   max-width: 12ch;
-  font-family: var(--font-main);
+  font-family: var(--font-display);
   line-height: 0.98;
   letter-spacing: 0;
   color: var(--amber-bright);
@@ -3547,3 +3763,364 @@
 /* These signature ambient motions (CPU packet flow, status pulses) deliberately
    keep running under reduce-motion — they are slow, looping and non-flashing,
    and the site's identity depends on them. */
+
+/* ───────────────── Cost wallet — subscriptions you dropped → $0 ─────────── */
+
+.cost-wallet {
+  position: relative;
+  width: 280px;
+  height: 250px;
+  margin: 0 auto;
+  cursor: pointer;
+  perspective: 1000px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  transition: transform 0.4s ease;
+  font-family: var(--font-main);
+}
+
+.cost-wallet::after {
+  content: 'Hover — you pay $0';
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: oklch(0.82 0.16 75 / 0.7);
+}
+
+@keyframes cw-slide-in {
+  0% {
+    transform: translateY(-90px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.cw-back {
+  position: absolute;
+  bottom: 0;
+  width: 280px;
+  height: 200px;
+  background: linear-gradient(180deg, oklch(0.12 0.012 60), oklch(0.05 0.007 54));
+  border: 1px solid oklch(0.82 0.16 75 / 0.22);
+  border-radius: 22px 22px 60px 60px;
+  z-index: 5;
+  box-shadow:
+    inset 0 25px 35px oklch(0 0 0 / 0.55),
+    inset 0 5px 15px oklch(0 0 0 / 0.6);
+}
+
+.cw-card {
+  position: absolute;
+  width: 260px;
+  height: 140px;
+  left: 10px;
+  border-radius: 16px;
+  padding: 18px;
+  color: var(--amber-bright);
+  background: linear-gradient(165deg, oklch(0.17 0.015 64), oklch(0.07 0.008 56));
+  border: 1px solid oklch(0.82 0.16 75 / 0.3);
+  box-shadow:
+    inset 0 1px 1px oklch(0.92 0.11 85 / 0.12),
+    0 -4px 16px oklch(0 0 0 / 0.45);
+  transition:
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    z-index 0s;
+  animation: cw-slide-in 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+.cw-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  border-top: 2px solid var(--cw-accent, var(--amber-bright));
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.cw-card-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.cw-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cw-chip {
+  width: 30px;
+  height: 22px;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--cw-accent, white) 55%, transparent);
+  border: 1px solid oklch(1 0 0 / 0.12);
+}
+
+.cw-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.cw-label {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber-dim);
+  margin-bottom: 2px;
+}
+
+.cw-value {
+  font-size: 10px;
+  color: oklch(0.9 0.05 80 / 0.85);
+}
+
+.cw-number-wrap {
+  position: relative;
+  text-align: right;
+}
+
+.cw-price {
+  font-size: 15px;
+  letter-spacing: 1px;
+  color: var(--amber-bright);
+}
+
+.cw-replaced {
+  display: none;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: oklch(0.84 0.16 150 / 0.92);
+}
+
+.cw-card--netflix {
+  bottom: 90px;
+  z-index: 10;
+  animation-delay: 0.1s;
+}
+
+.cw-card--spotify {
+  bottom: 65px;
+  z-index: 20;
+  animation-delay: 0.2s;
+}
+
+.cw-card--onedrive {
+  bottom: 40px;
+  z-index: 30;
+  animation-delay: 0.3s;
+}
+
+.cw-pocket {
+  position: absolute;
+  bottom: 0;
+  width: 280px;
+  height: 160px;
+  z-index: 40;
+  filter: drop-shadow(0 15px 25px oklch(0 0 0 / 0.5));
+}
+
+.cw-pocket-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cw-pocket-fill {
+  fill: oklch(0.09 0.01 56);
+}
+
+.cw-pocket-stitch {
+  fill: none;
+  stroke: oklch(0.82 0.16 75 / 0.42);
+  stroke-width: 1.5;
+}
+
+.cw-pocket-content {
+  position: absolute;
+  top: 45px;
+  width: 100%;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.cw-balance-stage {
+  position: relative;
+  height: 26px;
+  width: 100%;
+}
+
+.cw-balance-stars {
+  color: var(--amber-dim);
+  font-size: 22px;
+  letter-spacing: 3px;
+  transition: opacity 0.3s;
+}
+
+.cw-balance-real {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 10px);
+  color: var(--amber-bright);
+  font-size: 24px;
+  font-weight: 600;
+  opacity: 0;
+  transition: 0.3s;
+  text-shadow: 0 0 16px oklch(0.82 0.16 75 / 0.4);
+}
+
+.cw-pocket-label {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: oklch(0.85 0.06 80 / 0.62);
+}
+
+.cw-eye-wrap {
+  position: relative;
+  margin-top: 6px;
+  height: 20px;
+  width: 20px;
+  opacity: 0.35;
+  transition: 0.3s;
+}
+
+.cw-eye {
+  position: absolute;
+  top: 0;
+  left: 0;
+  stroke: var(--amber-bright);
+  transition: 0.3s;
+}
+
+.cw-eye-open {
+  opacity: 0;
+}
+
+.cost-wallet:hover {
+  transform: translateY(-5px);
+}
+
+.cost-wallet:hover .cw-eye-wrap {
+  opacity: 1;
+}
+
+.cost-wallet:hover .cw-card--netflix {
+  transform: translateY(-75px) rotate(-3deg);
+}
+
+.cost-wallet:hover .cw-card--spotify {
+  transform: translateY(-45px) rotate(2deg);
+}
+
+.cost-wallet:hover .cw-card--onedrive {
+  transform: translateY(-10px);
+}
+
+.cw-card:hover {
+  z-index: 100 !important;
+}
+
+.cost-wallet:hover .cw-card--netflix:hover {
+  transform: translateY(-60px) scale(1.05) rotate(0);
+}
+
+.cost-wallet:hover .cw-card--spotify:hover {
+  transform: translateY(-72px) scale(1.05) rotate(0);
+}
+
+.cost-wallet:hover .cw-card--onedrive:hover {
+  transform: translateY(-60px) scale(1.05) rotate(0);
+}
+
+.cw-card:hover .cw-price {
+  display: none;
+}
+
+.cw-card:hover .cw-replaced {
+  display: block;
+}
+
+.cost-wallet:hover .cw-balance-stars {
+  opacity: 0;
+}
+
+.cost-wallet:hover .cw-balance-real {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.cost-wallet:hover .cw-eye-slash {
+  opacity: 0;
+}
+
+.cost-wallet:hover .cw-eye-open {
+  opacity: 1;
+}
+
+/* ───────────────── Zero-subscriptions section shell ─────────────────────── */
+
+.zero-section {
+  position: relative;
+}
+
+.zero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(3rem, 6vw, 5rem);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .zero-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
+  }
+}
+
+.zero-wallet-mount {
+  display: flex;
+  justify-content: center;
+  padding-block: 1.5rem;
+}
+
+.zero-list {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.zero-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: oklch(0.88 0.05 78 / 0.82);
+  font-size: clamp(0.85rem, 1.1vw, 0.98rem);
+}
+
+.zero-list li::before {
+  content: '✕';
+  color: oklch(0.7 0.18 30 / 0.85);
+  font-size: 0.9em;
+}
