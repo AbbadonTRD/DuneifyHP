@@ -1,9 +1,17 @@
 "use client";
 
-import { type ComponentProps } from "react";
-import { AsciiField } from "@/components/ui/ascii-field";
-import { OceanWaves } from "@/components/ui/ocean-waves";
+import { useEffect, type ComponentProps } from "react";
 import { cn } from "@/lib/utils";
+
+declare global {
+  interface Window {
+    UnicornStudio?: {
+      isInitialized?: boolean;
+      init?: () => void;
+      destroy?: () => void;
+    };
+  }
+}
 
 type HeroAsciiOneProps = ComponentProps<"section">;
 
@@ -13,6 +21,100 @@ export default function HeroAsciiOne({
   className,
   ...props
 }: HeroAsciiOneProps) {
+  useEffect(() => {
+    const scriptId = "unicorn-studio-embed";
+
+    const hideUnicornChrome = () => {
+      const root = document.querySelector(".ascii-hero");
+
+      if (!root) {
+        return;
+      }
+
+      const chromeSelectors = [
+        'a[href*="unicorn"]',
+        'button[title*="unicorn" i]',
+        'button[aria-label*="unicorn" i]',
+        '[data-us-project] [title*="Made with" i]',
+        '[data-us-project] [aria-label*="Made with" i]',
+        '[data-us-project] [class*="brand" i]',
+        '[data-us-project] [class*="credit" i]',
+        '[data-us-project] [class*="watermark" i]',
+      ];
+
+      root.querySelectorAll(chromeSelectors.join(",")).forEach((element) => {
+        element.remove();
+      });
+
+      root
+        .querySelectorAll("a, button, [title], [aria-label]")
+        .forEach((element) => {
+          const text = (element.textContent || "").toLowerCase();
+          const title = (element.getAttribute("title") || "").toLowerCase();
+          const label = (
+            element.getAttribute("aria-label") || ""
+          ).toLowerCase();
+          const href = (element.getAttribute("href") || "").toLowerCase();
+
+          if (
+            text.includes("made with unicorn") ||
+            title.includes("made with unicorn") ||
+            label.includes("made with unicorn") ||
+            href.includes("unicorn.studio")
+          ) {
+            element.remove();
+          }
+        });
+    };
+
+    const initUnicorn = () => {
+      if (!window.UnicornStudio?.init) {
+        return;
+      }
+
+      // Always (re)scan on mount. UnicornStudio skips scenes it has already
+      // initialised, but a persistent `isInitialized` flag would wrongly
+      // suppress the re-init after an HMR swap / remount and leave the freshly
+      // rendered embed div blank.
+      window.UnicornStudio.init();
+      window.setTimeout(hideUnicornChrome, 150);
+    };
+
+    const existingScript = document.getElementById(
+      scriptId,
+    ) as HTMLScriptElement | null;
+
+    const chromeInterval = window.setInterval(hideUnicornChrome, 150);
+    const chromeTimeouts = [400, 900, 1800, 3200, 5000].map((delay) =>
+      window.setTimeout(hideUnicornChrome, delay),
+    );
+
+    if (existingScript) {
+      initUnicorn();
+      existingScript.addEventListener("load", initUnicorn, { once: true });
+
+      return () => {
+        window.clearInterval(chromeInterval);
+        chromeTimeouts.forEach((timeout) => window.clearTimeout(timeout));
+        existingScript.removeEventListener("load", initUnicorn);
+      };
+    }
+
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.src =
+      "https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.33/dist/unicornStudio.umd.js";
+    script.async = true;
+    script.addEventListener("load", initUnicorn, { once: true });
+    document.head.appendChild(script);
+
+    return () => {
+      window.clearInterval(chromeInterval);
+      chromeTimeouts.forEach((timeout) => window.clearTimeout(timeout));
+      script.removeEventListener("load", initUnicorn);
+    };
+  }, []);
+
   return (
     <section
       className={cn(
@@ -23,9 +125,14 @@ export default function HeroAsciiOne({
     >
       <div className="lab-backdrop" aria-hidden="true" />
 
-      <AsciiField focus={0.34} />
+      <div
+        className="ascii-unicorn-wrap ascii-unicorn-wrap--archive"
+        aria-hidden="true"
+      >
+        <div className="ascii-unicorn" data-us-project="OMzqyUv6M3kSnv0JeAtC" />
+      </div>
 
-      <OceanWaves />
+      <div className="ascii-stars-bg lg:hidden" aria-hidden="true" />
 
       <div className="ascii-corner ascii-corner-bl" aria-hidden="true" />
       <div className="ascii-corner ascii-corner-br" aria-hidden="true" />

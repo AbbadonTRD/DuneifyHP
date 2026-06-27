@@ -1,14 +1,90 @@
 'use client'
 
-import { type ComponentProps } from 'react'
-import { AsciiField } from '@/components/ui/ascii-field'
+import { useEffect, type ComponentProps } from 'react'
 import { cn } from '@/lib/utils'
+
+declare global {
+  interface Window {
+    UnicornStudio?: {
+      isInitialized?: boolean
+      init?: () => void
+      destroy?: () => void
+    }
+  }
+}
 
 type HeroAsciiProps = ComponentProps<'section'>
 
 const signalBars = [12, 18, 9, 24, 15, 21, 13, 17]
 
 export default function HeroAscii({ className, ...props }: HeroAsciiProps) {
+  useEffect(() => {
+    const scriptId = 'unicorn-studio-embed'
+
+    const hideUnicornChrome = () => {
+      document
+        .querySelectorAll(
+          [
+            '.ascii-hero a[href*="unicorn"]',
+            '.ascii-hero button[title*="unicorn" i]',
+            '.ascii-hero button[aria-label*="unicorn" i]',
+            '.ascii-hero [data-us-project] [title*="Made with" i]',
+            '.ascii-hero [data-us-project] [aria-label*="Made with" i]',
+            '.ascii-hero [data-us-project] [class*="brand" i]',
+            '.ascii-hero [data-us-project] [class*="credit" i]',
+            '.ascii-hero [data-us-project] [class*="watermark" i]',
+          ].join(','),
+        )
+        .forEach((element) => element.remove())
+    }
+
+    const initUnicorn = () => {
+      if (!window.UnicornStudio?.init) {
+        return
+      }
+
+      // Always (re)scan on mount. UnicornStudio skips scenes it has already
+      // initialised, but a persistent `isInitialized` flag would wrongly
+      // suppress the re-init after an HMR swap / remount and leave the freshly
+      // rendered embed div blank.
+      window.UnicornStudio.init()
+      window.setTimeout(hideUnicornChrome, 150)
+    }
+
+    const existingScript = document.getElementById(
+      scriptId,
+    ) as HTMLScriptElement | null
+    const chromeInterval = window.setInterval(hideUnicornChrome, 150)
+    const chromeTimeouts = [400, 900, 1800, 3200, 5000].map((delay) =>
+      window.setTimeout(hideUnicornChrome, delay),
+    )
+
+    if (existingScript) {
+      initUnicorn()
+      existingScript.addEventListener('load', initUnicorn, { once: true })
+
+      return () => {
+        window.clearInterval(chromeInterval)
+        chromeTimeouts.forEach((timeout) => window.clearTimeout(timeout))
+        existingScript.removeEventListener('load', initUnicorn)
+      }
+    }
+
+    const script = document.createElement('script')
+    script.id = scriptId
+    script.src =
+      'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v1.4.33/dist/unicornStudio.umd.js'
+    script.async = true
+    script.addEventListener('load', initUnicorn, { once: true })
+    document.head.appendChild(script)
+
+    return () => {
+      window.clearInterval(chromeInterval)
+      chromeTimeouts.forEach((timeout) => window.clearTimeout(timeout))
+      script.removeEventListener('load', initUnicorn)
+    }
+  }, [])
+
   return (
     <section
       className={cn(
@@ -19,7 +95,14 @@ export default function HeroAscii({ className, ...props }: HeroAsciiProps) {
     >
       <div className="lab-backdrop" aria-hidden="true" />
 
-      <AsciiField focus={0.66} />
+      <div className="ascii-unicorn-wrap hidden lg:block" aria-hidden="true">
+        <div
+          className="ascii-unicorn"
+          data-us-project="whwOGlfJ5Rz2rHaEUgHl"
+        />
+      </div>
+
+      <div className="ascii-stars-bg lg:hidden" aria-hidden="true" />
 
       <div className="ascii-topbar">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8 lg:py-4">

@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { EnterScreen } from "@/components/enter-screen";
-import { AsciiMarquee } from "@/components/ui/ascii-marquee";
 import { BentoGrid, type BentoItem } from "@/components/ui/bento-grid";
-import { CostWallet } from "@/components/ui/cost-wallet";
 import { CpuArchitecture } from "@/components/ui/cpu-architecture";
 import HeroAscii from "@/components/ui/hero-ascii";
 import HeroAsciiOne from "@/components/ui/hero-ascii-one";
@@ -172,11 +170,11 @@ function App() {
             whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="lab-card quicksync-bento group relative mb-4 overflow-hidden p-5 sm:p-7 lg:p-8"
+            className="lab-card
+            -bento group relative mb-4 overflow-hidden p-5 sm:p-7 lg:p-8"
           >
             <div className="lab-card-content quicksync-bento-content">
               <div className="quicksync-bento-copy">
-                <div className="quicksync-app-mark mb-5">Intel Quick Sync</div>
                 <h3 className="quicksync-bento-title">
                   <span className="block">Bad Device?</span>
                   <span className="block">No Problem.</span>
@@ -205,8 +203,6 @@ function App() {
           <BentoGrid items={services} />
         </div>
       </section>
-
-      <AsciiMarquee />
 
       <section
         id="recommendations"
@@ -243,54 +239,7 @@ function App() {
         </div>
       </section>
 
-      <section
-        id="zero"
-        className="zero-section dark relative w-full overflow-hidden"
-      >
-        <div className="lab-backdrop" aria-hidden="true" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
-          <div className="zero-grid">
-            <motion.div
-              initial={{ opacity: 0, y: reduce ? 0 : 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <p className="recs-eyebrow">THE MATH</p>
-              <h2 className="lab-heading text-3xl font-semibold sm:text-4xl lg:text-5xl">
-                Zero subscriptions.
-                <span className="block">Total freedom.</span>
-              </h2>
-              <p className="lab-copy mt-3 max-w-lg text-sm leading-relaxed sm:text-base">
-                No Netflix. No Prime. No Hulu, Disney+, OneDrive or Miro renting
-                you access to your own life. One box at home does the job — and
-                the monthly bill rounds to nothing.
-              </p>
-              <ul className="zero-list">
-                <li>Netflix, Prime, Disney+, Hulu — replaced by Jellyfin</li>
-                <li>Spotify, Apple Music — replaced by Navidrome</li>
-                <li>OneDrive, iCloud, Google Photos — replaced by Immich</li>
-                <li>Miro, Notion lock-in — your stack, your rules</li>
-              </ul>
-            </motion.div>
-
-            <motion.div
-              className="zero-wallet-mount"
-              initial={{ opacity: 0, y: reduce ? 0 : 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <CostWallet />
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      <AsciiMarquee text="█▓▒░ DUNEIFY ░▒▓█ ·· STREAM IT / SYNC IT / TRANSCODE IT / OWN IT ·· ▓▒░ HOME LAB ░▒▓ ·· 01001111 01010111 01001110 ·· OWNED.STACK ··" />
-
-      <section className="seas-section dark relative min-h-[82vh] w-full overflow-hidden">
+      <section className="seas-section seas-section--to-archive dark relative min-h-[82vh] w-full overflow-hidden">
         <div className="lab-backdrop" aria-hidden="true" />
         <div className="seas-current" aria-hidden="true" />
         <OceanWaves />
@@ -327,7 +276,7 @@ function App() {
         </div>
       </section>
 
-      <HeroAsciiOne />
+      <HeroAsciiOne className="archive-hero" />
     </>
   );
 }
