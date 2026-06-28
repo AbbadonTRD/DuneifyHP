@@ -13,6 +13,12 @@ const LAYERS = [
 const DOT_GAP = 15 // px between dots — matches the site's dot-field rhythm
 const AMBER = '255, 196, 92'
 
+// A little ASCII sailboat that drifts left across the whole wave and wraps.
+const BOAT_DRIFT = 0.04 // px per ms (~35s to cross the band)
+const BOAT_ART = ['  /|', ' / |', '/__|', '\\__/']
+const clampNum = (v: number, lo: number, hi: number) =>
+  Math.min(hi, Math.max(lo, v))
+
 export function OceanWaves() {
   const wrapRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -46,6 +52,30 @@ export function OceanWaves() {
       return y
     }
 
+    // A small ASCII sailboat (monospace glyphs), bow facing left since it always
+    // sails left. Saved context so its glow doesn't bleed into the dots next
+    // frame. Local origin = waterline; the hull line sits on it, sail stacks up.
+    const drawBoat = (x: number, y: number, angle: number, scale: number) => {
+      const fs = Math.round(14 * scale)
+      const lineH = fs * 0.92
+      const charW = fs * 0.6
+      ctx.save()
+      ctx.translate(x, y)
+      ctx.rotate(angle)
+      ctx.font = `${fs}px "JetBrains Mono", ui-monospace, monospace`
+      ctx.textBaseline = 'alphabetic'
+      ctx.textAlign = 'left'
+      ctx.shadowColor = `rgba(${AMBER}, 0.5)`
+      ctx.shadowBlur = 6
+      ctx.fillStyle = `rgba(${AMBER}, 0.92)`
+      const offX = -(BOAT_ART[BOAT_ART.length - 1].length * charW) / 2
+      for (let i = 0; i < BOAT_ART.length; i++) {
+        const yy = -(BOAT_ART.length - 1 - i) * lineH
+        ctx.fillText(BOAT_ART[i], offX, yy)
+      }
+      ctx.restore()
+    }
+
     // The ambient ocean is core to this section's identity, so it keeps moving
     // regardless of the OS reduce-motion flag — the motion is slow, smooth and
     // non-flashing, which is the gentle kind reduce-motion still allows.
@@ -74,6 +104,15 @@ export function OceanWaves() {
           ctx.fillRect(x - 1, Math.round(y) - 1, 2, 2)
         }
       }
+
+      // Sailboat: drift left across the whole wave, wrapping back to the right.
+      const span = width + 80
+      const boatX = width + 40 - ((t * BOAT_DRIFT) % span)
+      const boatY = restLine + surfaceAt(boatX, t)
+      const slope = (surfaceAt(boatX + 12, t) - surfaceAt(boatX - 12, t)) / 24
+      const angle = Math.atan(slope) * 0.6
+      const scale = clampNum(width / 1100, 0.75, 1.2)
+      drawBoat(boatX, boatY, angle, scale)
 
       rafRef.current = requestAnimationFrame(draw)
     }
