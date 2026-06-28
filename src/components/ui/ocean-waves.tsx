@@ -13,9 +13,27 @@ const LAYERS = [
 const DOT_GAP = 15 // px between dots — matches the site's dot-field rhythm
 const AMBER = '255, 196, 92'
 
-// A little ASCII sailboat that drifts left across the whole wave and wraps.
+// A Braille-art galleon that drifts left across the whole wave and wraps. The
+// dot glyphs echo the section's dot field, so the ship reads as part of the sea.
 const BOAT_DRIFT = 0.04 // px per ms (~35s to cross the band)
-const BOAT_ART = ['  /|', ' / |', '/__|', '\\__/']
+// Last line is the waterline reflection; it sits on the surface. Blank Braille
+// cells (⠀, U+2800) pad each row so widths stay aligned for centering.
+const BOAT_ART = [
+  '⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠀⠤⠴⠶⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⠀⠂⠉⡇⠀⠀⠀⢰⣿⣿⣿⣿⣧⠀⠀⢀⣄⣀⠀⠀⠀⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⢠⣶⣶⣷⠀⠀⠀⠸⠟⠁⠀⡇⠀⠀⠀⠀⠀⢹⠀⠀⠀⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⠘⠟⢹⣋⣀⡀⢀⣤⣶⣿⣿⣿⣿⣿⡿⠛⣠⣼⣿⡟⠀⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⣴⣾⣿⣿⣿⣿⢁⣾⣿⣿⣿⣿⣿⣿⡿⢁⣾⣿⣿⣿⠁⠀⠀⠀⠀',
+  '⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⢸⣿⣿⣿⣿⣿⣿⣿⡇⢸⣿⣿⣿⠿⠇⠀⠀⠀⠀',
+  '⠀⠀⠀⠳⣤⣙⠟⠛⢻⠿⣿⠸⣿⣿⣿⣿⣿⣿⣿⣇⠘⠉⠀⢸⠀⢀⣠⠀⠀⠀',
+  '⠀⠀⠀⠀⠈⠻⣷⣦⣼⠀⠀⠀⢻⣿⣿⠿⢿⡿⠿⣿⡄⠀⠀⣼⣷⣿⣿⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⠈⣿⣿⣿⣶⣄⡈⠉⠀⠀⢸⡇⠀⠀⠉⠂⠀⣿⣿⣿⣧⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⣷⣤⣀⣸⣧⣠⣤⣴⣶⣾⣿⣿⣿⡿⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠟⠛⠉⠀⠀⠀⠀',
+  '⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀',
+]
 const clampNum = (v: number, lo: number, hi: number) =>
   Math.min(hi, Math.max(lo, v))
 
@@ -56,7 +74,7 @@ export function OceanWaves() {
     // sails left. Saved context so its glow doesn't bleed into the dots next
     // frame. Local origin = waterline; the hull line sits on it, sail stacks up.
     const drawBoat = (x: number, y: number, angle: number, scale: number) => {
-      const fs = Math.round(14 * scale)
+      const fs = Math.round(9 * scale)
       const lineH = fs * 0.92
       const charW = fs * 0.6
       ctx.save()
@@ -65,8 +83,8 @@ export function OceanWaves() {
       ctx.font = `${fs}px "JetBrains Mono", ui-monospace, monospace`
       ctx.textBaseline = 'alphabetic'
       ctx.textAlign = 'left'
-      ctx.shadowColor = `rgba(${AMBER}, 0.5)`
-      ctx.shadowBlur = 6
+      ctx.shadowColor = `rgba(${AMBER}, 0.45)`
+      ctx.shadowBlur = 4
       ctx.fillStyle = `rgba(${AMBER}, 0.92)`
       const offX = -(BOAT_ART[BOAT_ART.length - 1].length * charW) / 2
       for (let i = 0; i < BOAT_ART.length; i++) {
@@ -110,7 +128,7 @@ export function OceanWaves() {
       const boatX = width + 40 - ((t * BOAT_DRIFT) % span)
       const boatY = restLine + surfaceAt(boatX, t)
       const slope = (surfaceAt(boatX + 12, t) - surfaceAt(boatX - 12, t)) / 24
-      const angle = Math.atan(slope) * 0.6
+      const angle = Math.atan(slope) * 0.45
       const scale = clampNum(width / 1100, 0.75, 1.2)
       drawBoat(boatX, boatY, angle, scale)
 
