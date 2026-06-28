@@ -94,6 +94,13 @@ export function OceanWaves() {
       ctx.restore()
     }
 
+    // The boat carries momentum: its pitch and bob ease toward the wave rather
+    // than snapping to it, and it keeps a slow roll of its own. That lag is what
+    // reads as "floating" instead of a sticker glued to the surface.
+    let smAngle = 0 // smoothed pitch (rad)
+    let smHeave = 0 // smoothed extra bob (px)
+    let lastT = 0
+
     // The ambient ocean is core to this section's identity, so it keeps moving
     // regardless of the OS reduce-motion flag — the motion is slow, smooth and
     // non-flashing, which is the gentle kind reduce-motion still allows.
@@ -126,11 +133,27 @@ export function OceanWaves() {
       // Sailboat: drift left across the whole wave, wrapping back to the right.
       const span = width + 80
       const boatX = width + 40 - ((t * BOAT_DRIFT) % span)
-      const boatY = restLine + surfaceAt(boatX, t)
-      const slope = (surfaceAt(boatX + 12, t) - surfaceAt(boatX - 12, t)) / 24
-      const angle = Math.atan(slope) * 0.45
       const scale = clampNum(width / 1100, 0.75, 1.2)
-      drawBoat(boatX, boatY, angle, scale)
+
+      // Frame delta (clamped so a hidden tab / dropped frames don't lurch it).
+      const dt = lastT ? Math.min(t - lastT, 64) : 16
+      lastT = t
+
+      // Pitch target: slope sampled across roughly the hull's reach (not a single
+      // point, which twitches), plus a slow roll so it rocks even over calm water.
+      const reach = 24 * scale
+      const slope = (surfaceAt(boatX + reach, t) - surfaceAt(boatX - reach, t)) / (2 * reach)
+      const roll = Math.sin(t * 0.0011 + boatX * 0.004) * 0.05
+      const targetAngle = Math.atan(slope) * 0.5 + roll
+      // A small heave so the hull lifts and settles a touch beyond the surface.
+      const targetHeave = Math.sin(t * 0.0016 + 1.7) * 2 * scale
+
+      // Ease toward the targets (time-constant low-pass -> momentum/lag).
+      smAngle += (targetAngle - smAngle) * (1 - Math.exp(-dt / 230))
+      smHeave += (targetHeave - smHeave) * (1 - Math.exp(-dt / 320))
+
+      const boatY = restLine + surfaceAt(boatX, t) + smHeave
+      drawBoat(boatX, boatY, smAngle, scale)
 
       rafRef.current = requestAnimationFrame(draw)
     }
